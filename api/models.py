@@ -27,10 +27,3 @@ class User(BaseModel):
 
     def __str__(self):
         return self.id
-
-
-class RefreshToken(BaseModel):
-    refresh_token = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.refresh_token
