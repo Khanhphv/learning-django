@@ -1,5 +1,7 @@
+import logging
+import traceback
 from os import name
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
@@ -26,13 +28,17 @@ def login(request):
         token = data.get('id_token')
         if provider == 'google':
             CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
-            if idinfo['aud'] != CLIENT_ID:
-                return AppError(ErrorEnum.NOT_FOUND).to_response()
+            try:
+                idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+                if idinfo['aud'] != CLIENT_ID:
+                    return AppError(ErrorEnum.UNAUTHORIZED).to_response()
+            except Exception as e:
+                logging.error(traceback.format_exc())
+                return AppError(ErrorEnum.UNAUTHORIZED).to_response()
         querySet = User.objects.get_or_create(email=email)[0]
             
     if querySet is None:
-        return AppError(ErrorEnum.NOT_FOUND).to_response()
+        return AppError(ErrorEnum.UNAUTHORIZED).to_response()
 
     refresh = RefreshToken.for_user(querySet)
     return JsonResponse(

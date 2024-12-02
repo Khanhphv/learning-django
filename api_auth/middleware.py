@@ -1,11 +1,12 @@
 import logging
 
 
-class JWTAuthenticationMiddleware:
+class LogRequestMiddleware:
+    __name__ = 'app'
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and setup
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger('app')
 
 
     def __call__(self, request):

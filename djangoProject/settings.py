@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from dotenv import load_dotenv
 from pathlib import Path
+import os
 
 load_dotenv()
 
@@ -46,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'api_auth.middleware.JWTAuthenticationMiddleware'
+    'api_auth.middleware.LogRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'
@@ -135,3 +136,39 @@ ADMIN_ENABLED = False
 
 #customize user model
 AUTH_USER_MODEL = 'api_auth.User'
+
+#Logging config
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Keep default loggers enabled
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',  # Set the log level
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),  # Path to your log file
+            'formatter': 'verbose',  # Use the formatter defined above
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],  # Use the file handler for the 'django' logger
+            'level': 'INFO',  # Set the log level
+            'propagate': True,
+        },
+        'app': {  # Custom logger for your app
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
