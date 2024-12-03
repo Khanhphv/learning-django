@@ -47,7 +47,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'api_auth.middleware.LogRequestMiddleware'
+    'api_auth.middleware.LogRequestMiddleware',
+    'api_auth.middleware.AuthenticationMiddleware'
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'

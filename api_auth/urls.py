@@ -6,4 +6,5 @@ urlpatterns = [
     path('login', views.login),
     # path('logout/', views.logout, name='logout'),
     # path('refresh-token/', views.refresh_token, name='refresh_token'),
+    path('user-list', views.user_list),
 ]

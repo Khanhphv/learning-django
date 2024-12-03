@@ -14,14 +14,14 @@ from google.oauth2 import id_token
 from rest_framework_simplejwt.tokens import RefreshToken
 from google.auth.transport import requests
 import os
+
 # @csrf_exempt
 # @api_view(['POST'])
 def login(request):
     data = JSONParser().parse(request)
-    email = data["email"]
+    email = data.get('email')
     password = data.get('password')
-    name = data.get('name')
-    provider = data['provider']
+    provider = data.get('provider')
     if email and password:
         querySet = User.objects.filter(email=email, password=password).first()
     elif provider:
@@ -29,13 +29,19 @@ def login(request):
         if provider == 'google':
             CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
             try:
-                idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
-                if idinfo['aud'] != CLIENT_ID:
+                id_info = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+                
+                if id_info['aud'] != CLIENT_ID:
                     return AppError(ErrorEnum.UNAUTHORIZED).to_response()
+                email = id_info['email']
+                querySet = User.objects.get_or_create(email=email)[0]
+                querySet.provider = provider
+                querySet.save()
+                
             except Exception as e:
                 logging.error(traceback.format_exc())
                 return AppError(ErrorEnum.UNAUTHORIZED).to_response()
-        querySet = User.objects.get_or_create(email=email)[0]
+       
             
     if querySet is None:
         return AppError(ErrorEnum.UNAUTHORIZED).to_response()
