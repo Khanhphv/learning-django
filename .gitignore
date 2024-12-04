@@ -3,6 +3,6 @@
 .env
 
 #logger
-logs
+logs/*.log
 
 __pycache__
