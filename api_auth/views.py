@@ -25,9 +25,10 @@ def login(request):
     if email and password:
         querySet = User.objects.filter(email=email, password=password).first()
     elif provider:
-        token = data.get('id_token')
+        token = data.get('token')
         if provider == 'google':
             CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+            print(CLIENT_ID)
             try:
                 id_info = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
                 
